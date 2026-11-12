@@ -15,7 +15,7 @@ on:
     paths:
       - 'src/**'
       - 'ios/**'
-      - '.github/workflows/ios-build.yml'
+      - '.github/**'
 
 jobs:
   build:
