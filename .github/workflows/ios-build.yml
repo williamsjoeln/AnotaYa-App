@@ -52,12 +52,26 @@ jobs:
         run: |
           if [ -n "$BUILD_CERTIFICATE_BASE64" ]; then
             echo "Installing Apple Certificate..."
-            CERT_PATH=$RUNNER_TEMP/build_certificate.p12
-            PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
+            export CERT_PATH=$RUNNER_TEMP/build_certificate.p12
+            export PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
             KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
 
-            echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o $CERT_PATH
-            echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode -o $PP_PATH
+            python3 -c "
+import os, base64
+cert = os.environ.get('BUILD_CERTIFICATE_BASE64', '').strip().replace('\r', '').replace('\n', '')
+pp = os.environ.get('BUILD_PROVISION_PROFILE_BASE64', '').strip().replace('\r', '').replace('\n', '')
+with open(os.environ['CERT_PATH'], 'wb') as f:
+    f.write(base64.b64decode(cert))
+with open(os.environ['PP_PATH'], 'wb') as f:
+    f.write(base64.b64decode(pp))
+"
+
+            echo "Certificate size: $(wc -c < $CERT_PATH) bytes"
+            echo "Provisioning profile size: $(wc -c < $PP_PATH) bytes"
+
+            if ! openssl pkcs12 -info -in $CERT_PATH -passin "pass:$P12_PASSWORD" -noout 2>/dev/null; then
+              echo "::error::La contraseña en APPLE_CERTIFICATE_PASSWORD no coincide con el certificado .p12"
+            fi
 
             security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
             security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
