@@ -1,4 +1,4 @@
-# AnotaYa iOS automated build & TestFlight release
+# AnotaYa iOS automated build & TestFlight release (v1.0.0-build.3)
 name: Build iOS App (App Store & TestFlight)
 
 on:
