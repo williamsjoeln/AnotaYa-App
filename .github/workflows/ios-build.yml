@@ -88,6 +88,8 @@ jobs:
           set -o pipefail
           mkdir -p build
           ARCHIVE_PATH="$(pwd)/build/App.xcarchive"
+          echo "ARCHIVE_PATH=$ARCHIVE_PATH" >> $GITHUB_ENV
+
           if [ -d "ios/App/App.xcworkspace" ]; then
             TARGET_FLAG="-workspace ios/App/App.xcworkspace"
           else
@@ -103,7 +105,6 @@ jobs:
               -configuration Release \
               -archivePath "$ARCHIVE_PATH" \
               DEVELOPMENT_TEAM=H79W4YK96D \
-              CODE_SIGN_IDENTITY="Apple Distribution" \
               2>&1 | tee xcodebuild.log || (echo "::error::Xcode build failed. Checking errors:" && grep -i "error:" xcodebuild.log -A 2 -B 1 | head -n 30 && tail -n 50 xcodebuild.log && exit 65)
           else
             echo "Building unsigned/ad-hoc for iOS package..."
@@ -119,7 +120,17 @@ jobs:
 
       - name: 📦 Package .ipa file
         run: |
-          python3 .github/scripts/package_ipa.py
+          echo "Exporting IPA with official Apple exportArchive..."
+          xcodebuild -exportArchive \
+            -archivePath "$ARCHIVE_PATH" \
+            -exportOptionsPlist ios/App/exportOptions.plist \
+            -exportPath build/ \
+            2>&1 | tee export.log || python3 .github/scripts/package_ipa.py
+
+          if [ -f "build/App.ipa" ] && [ ! -f "build/AnotaYa.ipa" ]; then
+            cp "build/App.ipa" "build/AnotaYa.ipa"
+          fi
+          ls -lh build/*.ipa || true
 
       - name: 🚀 Upload directly to App Store Connect / TestFlight
         if: ${{ github.event_name == 'push' || github.event.inputs.upload_to_testflight != 'false' }}
