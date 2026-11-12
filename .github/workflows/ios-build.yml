@@ -85,6 +85,7 @@ jobs:
         env:
           HAS_CERT: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
         run: |
+          set -o pipefail
           mkdir -p build
           ARCHIVE_PATH="$(pwd)/build/App.xcarchive"
           if [ -d "ios/App/App.xcworkspace" ]; then

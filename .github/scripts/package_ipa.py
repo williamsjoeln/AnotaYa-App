@@ -29,6 +29,12 @@ def main():
     
     if not archive_path:
         print("ERROR: No .xcarchive directory found anywhere in workspace!")
+        if os.path.exists("xcodebuild.log"):
+            print("=== XCODEBUILD.LOG LAST 100 LINES ===")
+            with open("xcodebuild.log", "r", encoding="utf-8", errors="ignore") as f:
+                lines = f.readlines()
+                for line in lines[-100:]:
+                    print(line, end="")
         print("Workspace root contents:", os.listdir("."))
         if os.path.exists("ios"):
             print("ios/ contents:", os.listdir("ios"))
