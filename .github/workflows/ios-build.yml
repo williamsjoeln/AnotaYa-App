@@ -117,9 +117,14 @@ jobs:
       - name: 📦 Package .ipa file
         run: |
           mkdir -p build/Payload
-          cp -r build/App.xcarchive/Products/Applications/App.app build/Payload/
+          echo "Inspecting archive applications:"
+          ls -la build/App.xcarchive/Products/Applications/
+          APP_PATH=$(find build/App.xcarchive/Products/Applications -name "*.app" -maxdepth 1 | head -n 1)
+          echo "Found app bundle at: $APP_PATH"
+          cp -r "$APP_PATH" build/Payload/
+          APP_NAME=$(basename "$APP_PATH")
           if [ -f "$RUNNER_TEMP/build_pp.mobileprovision" ]; then
-            cp "$RUNNER_TEMP/build_pp.mobileprovision" build/Payload/App.app/embedded.mobileprovision
+            cp "$RUNNER_TEMP/build_pp.mobileprovision" "build/Payload/$APP_NAME/embedded.mobileprovision"
           fi
           cd build && zip -r -9 AnotaYa.ipa Payload
           echo "✅ AnotaYa.ipa packaged successfully!"
