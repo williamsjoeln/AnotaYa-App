@@ -56,33 +56,7 @@ jobs:
             export PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
             KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
 
-            python3 -c "
-import os, base64, subprocess
-
-p = os.environ.get('P12_PASSWORD', '')
-c = os.environ.get('BUILD_CERTIFICATE_BASE64', '').strip().replace('\r', '').replace('\n', '')
-pp = os.environ.get('BUILD_PROVISION_PROFILE_BASE64', '').strip().replace('\r', '').replace('\n', '')
-
-print(f'P12_PASSWORD length: {len(p)}')
-print(f'CERT_BASE64 length: {len(c)}')
-print(f'PP_BASE64 length: {len(pp)}')
-
-cert_bytes = base64.b64decode(c)
-with open(os.environ['CERT_PATH'], 'wb') as f:
-    f.write(cert_bytes)
-
-pp_bytes = base64.b64decode(pp)
-with open(os.environ['PP_PATH'], 'wb') as f:
-    f.write(pp_bytes)
-
-test_ssl = subprocess.run(['openssl', 'pkcs12', '-info', '-in', os.environ['CERT_PATH'], '-passin', 'env:P12_PASSWORD', '-noout'], capture_output=True, text=True)
-print('OpenSSL returncode:', test_ssl.returncode)
-if test_ssl.returncode != 0:
-    print('OpenSSL error:', test_ssl.stderr)
-"
-
-            echo "Certificate size: $(wc -c < $CERT_PATH) bytes"
-            echo "Provisioning profile size: $(wc -c < $PP_PATH) bytes"
+            python3 .github/scripts/ios_install_cert.py
 
             security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
             security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
