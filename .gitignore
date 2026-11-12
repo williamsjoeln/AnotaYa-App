@@ -35,6 +35,8 @@ dist-ssr
 *.keystore
 android/app/*.jks
 apple-certs/
+*SECRETO*.txt
+*SECRETOS*.txt
 
 # Scratch & builds
 build/
