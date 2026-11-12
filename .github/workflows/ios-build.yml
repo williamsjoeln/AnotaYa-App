@@ -117,17 +117,16 @@ jobs:
       - name: 📦 Package .ipa file
         run: |
           mkdir -p build/Payload
-          echo "Inspecting archive applications:"
-          ls -la build/App.xcarchive/Products/Applications/
-          APP_PATH=$(find build/App.xcarchive/Products/Applications -name "*.app" -maxdepth 1 | head -n 1)
-          echo "Found app bundle at: $APP_PATH"
-          cp -r "$APP_PATH" build/Payload/
-          APP_NAME=$(basename "$APP_PATH")
+          cp -R build/App.xcarchive/Products/Applications/*.app build/Payload/
           if [ -f "$RUNNER_TEMP/build_pp.mobileprovision" ]; then
-            cp "$RUNNER_TEMP/build_pp.mobileprovision" "build/Payload/$APP_NAME/embedded.mobileprovision"
+            for app_dir in build/Payload/*.app; do
+              cp "$RUNNER_TEMP/build_pp.mobileprovision" "$app_dir/embedded.mobileprovision"
+            done
           fi
-          cd build && zip -r -9 AnotaYa.ipa Payload
+          cd build
+          zip -q -r AnotaYa.ipa Payload
           echo "✅ AnotaYa.ipa packaged successfully!"
+          ls -lh AnotaYa.ipa
 
       - name: 🚀 Upload directly to App Store Connect / TestFlight
         if: ${{ github.event_name == 'push' || github.event.inputs.upload_to_testflight != 'false' }}
