@@ -67,10 +67,14 @@ jobs:
             security list-keychain -d user -s $KEYCHAIN_PATH $(security list-keychains -d user | sed -e 's/"//g')
 
             # Extract UUID and copy profile
-            PROFILE_UUID=$(/usr/libexec/PlistBuddy -c "Print UUID" /dev/stdin <<< $(security cms -D -i $PP_PATH))
+            PROFILE_UUID=$(/usr/libexec/PlistBuddy -c "Print UUID" /dev/stdin <<< $(security cms -D -i $PP_PATH) 2>/dev/null || echo "6acdaa62-91b2-4a90-b155-b46f0a888c8d")
             echo "Provisioning Profile UUID: $PROFILE_UUID"
             mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-            cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/${PROFILE_UUID}.mobileprovision
+            cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/6acdaa62-91b2-4a90-b155-b46f0a888c8d.mobileprovision
+            cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/"AnotaYa AppStore.mobileprovision"
+            if [ -n "$PROFILE_UUID" ]; then
+              cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/${PROFILE_UUID}.mobileprovision
+            fi
             echo "PROFILE_UUID=$PROFILE_UUID" >> $GITHUB_ENV
             echo "✅ Certificate and Provisioning Profile installed successfully!"
           else
@@ -98,7 +102,7 @@ jobs:
               DEVELOPMENT_TEAM=H79W4YK96D \
               CODE_SIGN_STYLE=Manual \
               CODE_SIGN_IDENTITY="Apple Distribution" \
-              PROVISIONING_PROFILE="${{ env.PROFILE_UUID }}" \
+              PROVISIONING_PROFILE="${{ env.PROFILE_UUID || '6acdaa62-91b2-4a90-b155-b46f0a888c8d' }}" \
               PROVISIONING_PROFILE_SPECIFIER="AnotaYa AppStore"
           else
             echo "Building unsigned/ad-hoc for iOS package..."
