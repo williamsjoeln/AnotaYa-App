@@ -10,9 +10,7 @@ def main():
     cert_path = os.environ.get('CERT_PATH')
     pp_path = os.environ.get('PP_PATH')
 
-    print(f"P12_PASSWORD length: {len(p)}")
-    print(f"CERT_BASE64 length: {len(c)}")
-    print(f"PP_BASE64 length: {len(pp)}")
+    print(f"::notice::P12_PASSWORD len: {len(p)} | CERT_BASE64 len: {len(c)} | PP_BASE64 len: {len(pp)}")
 
     if not c or not cert_path:
         print("ERROR: Certificate data or path missing")
