@@ -100,10 +100,7 @@ jobs:
               -configuration Release \
               -archivePath build/App.xcarchive \
               DEVELOPMENT_TEAM=H79W4YK96D \
-              CODE_SIGN_STYLE=Manual \
-              CODE_SIGN_IDENTITY="Apple Distribution" \
-              PROVISIONING_PROFILE="${{ env.PROFILE_UUID || '6acdaa62-91b2-4a90-b155-b46f0a888c8d' }}" \
-              PROVISIONING_PROFILE_SPECIFIER="AnotaYa AppStore"
+              CODE_SIGN_IDENTITY="Apple Distribution"
           else
             echo "Building unsigned/ad-hoc for iOS package..."
             xcodebuild archive \
