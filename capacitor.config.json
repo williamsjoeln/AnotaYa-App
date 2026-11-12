@@ -1,0 +1,9 @@
+{
+  "appId": "com.anotaya.app",
+  "appName": "AnotaYa",
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https"
+  }
+}

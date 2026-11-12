@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">AnotaYa</string>
+    <string name="title_activity_main">AnotaYa</string>
+    <string name="package_name">com.anotaya.app</string>
+    <string name="custom_url_scheme">com.anotaya.app</string>
+</resources>

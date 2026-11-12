@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "797797104296",
+    "project_id": "mibolsillo-app-ec",
+    "storage_bucket": "mibolsillo-app-ec.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:797797104296:android:ff95152a0ac9383eeda09d",
+        "android_client_info": {
+          "package_name": "com.anotaya.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "797797104296-9gr8bdru885j1he20m9hn66l3dci7hm3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.anotaya.app",
+            "certificate_hash": "62a8cf04e3ab6a20e48753e45c78c76f97398626"
+          }
+        },
+        {
+          "client_id": "797797104296-p7lpta0b12k7i4b96p6qao9fuaao0ifo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.anotaya.app",
+            "certificate_hash": "22227f98b0e4c4dda95c977acc62a8961c0e4cc4"
+          }
+        },
+        {
+          "client_id": "797797104296-tlt21sh24beptk6f5vkh0232hscf26rm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD1p7SxnQumakCKWarb78JjYX4f-bp5Es8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "797797104296-tlt21sh24beptk6f5vkh0232hscf26rm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
