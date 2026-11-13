@@ -114,6 +114,11 @@ export default function App() {
     let unsubFirestore = null;
 
     async function initAuth() {
+      // Timeout de seguridad de 2.5s: nunca dejar la pantalla congelada en 'Cargando AnotaYa...'
+      const safetyTimeout = setTimeout(() => {
+        if (isMounted) setAuthChecking(false);
+      }, 2500);
+
       try {
         const res = await checkRedirectResult();
         if (res?.error) {
@@ -135,6 +140,7 @@ export default function App() {
       }
 
       onAuthStateChanged(auth, (firebaseUser) => {
+        clearTimeout(safetyTimeout);
         if (!isMounted) return;
 
         if (firebaseUser) {

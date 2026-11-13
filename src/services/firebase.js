@@ -166,11 +166,17 @@ export async function loginWithGoogle(rememberMe = true) {
 // Check redirect result on load
 export async function checkRedirectResult() {
   try {
-    const result = await getRedirectResult(auth);
+    // Si es nativo (iOS / Android), getRedirectResult no debe bloquear el inicio
+    if (Capacitor.isNativePlatform()) {
+      return { user: null, error: null };
+    }
+    const checkPromise = getRedirectResult(auth);
+    const timeoutPromise = new Promise((resolve) => setTimeout(() => resolve(null), 2500));
+    const result = await Promise.race([checkPromise, timeoutPromise]);
     return { user: result?.user || null, error: null };
   } catch (error) {
-    console.error('Redirect result check error:', error);
-    return { user: null, error: error.message || error.code || String(error) };
+    console.warn('Redirect result check error:', error);
+    return { user: null, error: null };
   }
 }
 
