@@ -62,13 +62,39 @@ export async function loginWithApple(rememberMe = true) {
       console.warn('Persistence setup warning:', persistErr);
     }
 
+    // En iOS nativo con Capacitor, usamos SocialLogin oficial con Face ID / Touch ID
+    if (Capacitor.isNativePlatform()) {
+      await ensureSocialLogin();
+      const loginRes = await SocialLogin.login({
+        provider: 'apple',
+        options: {
+          scopes: ['email', 'name']
+        }
+      });
+
+      const idToken = loginRes?.result?.idToken;
+      const rawNonce = loginRes?.result?.nonce;
+      if (!idToken) {
+        return { user: null, error: 'No se recibió la confirmación de Apple.' };
+      }
+
+      const credential = appleProvider.credential({
+        idToken: idToken,
+        rawNonce: rawNonce
+      });
+      const userCredential = await signInWithCredential(auth, credential);
+      return { user: userCredential.user, error: null };
+    }
+
     const isIOS = typeof navigator !== 'undefined' && /iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-    // En iOS (tanto Safari como pantalla de inicio), Apple Sign In no admite popups confiables en WebKit.
-    // Usamos signInWithRedirect para que el Face ID valide y devuelva la sesión al recargar la app.
     if (isIOS) {
-      await signInWithRedirect(auth, appleProvider);
-      return { user: null, redirecting: true, error: null };
+      const popupPromise = signInWithPopup(auth, appleProvider);
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('timeout')), 20000);
+      });
+      const result = await Promise.race([popupPromise, timeoutPromise]);
+      return { user: result.user, error: null };
     }
 
     const popupPromise = signInWithPopup(auth, appleProvider);
@@ -105,7 +131,8 @@ async function ensureSocialLogin() {
       google: {
         webClientId: '797797104296-tlt21sh24beptk6f5vkh0232hscf26rm.apps.googleusercontent.com',
         mode: 'online'
-      }
+      },
+      apple: {}
     });
     socialLoginInitialized = true;
   } catch (e) {

@@ -73,5 +73,17 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.anotaya.app</string>
+				<string>com.googleusercontent.apps.797797104296-tlt21sh24beptk6f5vkh0232hscf26rm</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>
