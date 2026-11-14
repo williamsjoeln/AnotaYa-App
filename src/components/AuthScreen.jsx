@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Capacitor } from '@capacitor/core';
 import { 
   ShieldCheck, Lock, Mail, User, Eye, EyeOff, 
   ArrowRight, Sparkles, CheckCircle2, AlertCircle, 
@@ -307,8 +308,8 @@ export function AuthScreen({ onLoginSuccess }) {
             </div>
           )}
 
-          {/* Botones Sociales: Google y Apple (Social Login) */}
-          {mode !== 'forgot' && (
+          {/* Botones Sociales: Google y Apple (Social Login en Web) */}
+          {mode !== 'forgot' && !Capacitor.isNativePlatform() && (
             <div className="space-y-2.5">
               {/* Botón Google */}
               <button

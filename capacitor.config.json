@@ -5,5 +5,10 @@
   "bundledWebRuntime": false,
   "server": {
     "androidScheme": "https"
+  },
+  "ios": {
+    "backgroundColor": "#F8FAFC",
+    "allowsLinkPreview": false,
+    "scrollEnabled": true
   }
 }
