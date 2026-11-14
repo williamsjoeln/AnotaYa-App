@@ -68,10 +68,12 @@ export function AuthScreen({ onLoginSuccess }) {
       setGoogleLoading(false);
 
       if (err) {
-        if (!err.includes('popup-closed-by-user')) {
-          setError(parseFirebaseError({ message: err }));
-          sounds.playDelete();
+        // Ignorar si el usuario canceló la hoja de Face ID / Apple Sign In
+        if (err.includes('1001') || err.includes('canceled') || err.includes('cancelled') || err.includes('popup-closed-by-user')) {
+          return;
         }
+        setError(parseFirebaseError({ message: err }));
+        sounds.playDelete();
       } else if (user) {
         sounds.playCash();
         try {
@@ -105,10 +107,12 @@ export function AuthScreen({ onLoginSuccess }) {
       setAppleLoading(false);
 
       if (err) {
-        if (!err.includes('popup-closed-by-user')) {
-          setError(parseFirebaseError({ message: err }));
-          sounds.playDelete();
+        // Ignorar si el usuario canceló la hoja de Face ID / Apple Sign In
+        if (err.includes('1001') || err.includes('canceled') || err.includes('cancelled') || err.includes('popup-closed-by-user')) {
+          return;
         }
+        setError(parseFirebaseError({ message: err }));
+        sounds.playDelete();
       } else if (user) {
         sounds.playCash();
         try {
