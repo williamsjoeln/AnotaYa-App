@@ -72,7 +72,7 @@ export function AuthScreen({ onLoginSuccess }) {
         if (err.includes('1001') || err.includes('canceled') || err.includes('cancelled') || err.includes('popup-closed-by-user')) {
           return;
         }
-        setError(parseFirebaseError({ message: err }));
+        setError(typeof err === 'string' && err.startsWith('[') ? err : parseFirebaseError({ message: err }));
         sounds.playDelete();
       } else if (user) {
         sounds.playCash();
@@ -111,7 +111,7 @@ export function AuthScreen({ onLoginSuccess }) {
         if (err.includes('1001') || err.includes('canceled') || err.includes('cancelled') || err.includes('popup-closed-by-user')) {
           return;
         }
-        setError(parseFirebaseError({ message: err }));
+        setError(typeof err === 'string' && err.startsWith('[') ? err : parseFirebaseError({ message: err }));
         sounds.playDelete();
       } else if (user) {
         sounds.playCash();
@@ -173,7 +173,7 @@ export function AuthScreen({ onLoginSuccess }) {
       setFormLoading(false);
 
       if (err) {
-        setError(parseFirebaseError({ message: err }));
+        setError(typeof err === 'string' && err.startsWith('[') ? err : parseFirebaseError({ message: err }));
         sounds.playDelete();
       } else if (user) {
         sounds.playCash();
@@ -198,7 +198,7 @@ export function AuthScreen({ onLoginSuccess }) {
       setFormLoading(false);
 
       if (err) {
-        setError(parseFirebaseError({ message: err }));
+        setError(typeof err === 'string' && err.startsWith('[') ? err : parseFirebaseError({ message: err }));
         sounds.playDelete();
       } else if (user) {
         sounds.playCash();

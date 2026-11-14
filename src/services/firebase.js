@@ -79,12 +79,20 @@ export async function loginWithApple(rememberMe = true) {
         return { user: null, error: 'No se recibió la confirmación de Apple.' };
       }
 
-      const credential = appleProvider.credential({
-        idToken: idToken,
-        ...(rawNonce ? { rawNonce } : {})
-      });
-      const userCredential = await signInWithCredential(auth, credential);
-      return { user: userCredential.user, error: null };
+      try {
+        const credential = appleProvider.credential({
+          idToken: idToken,
+          ...(rawNonce ? { rawNonce } : {})
+        });
+        const userCredential = await signInWithCredential(auth, credential);
+        return { user: userCredential.user, error: null };
+      } catch (authErr) {
+        console.error('Firebase Apple auth error:', authErr);
+        return { 
+          user: null, 
+          error: authErr.code ? []  : (authErr.message || String(authErr))
+        };
+      }
     }
 
     const isIOS = typeof navigator !== 'undefined' && /iPhone|iPad|iPod/i.test(navigator.userAgent);
