@@ -439,7 +439,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] pb-32 sm:pb-16 selection:bg-emerald-600 selection:text-white max-w-full overflow-x-hidden">
+    <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] pb-24 sm:pb-12 selection:bg-emerald-600 selection:text-white max-w-full overflow-x-hidden">
       
       {/* ================= HEADER ADAPTATIVO ================= */}
       <header 

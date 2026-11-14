@@ -149,9 +149,9 @@ export function DebtCard({
       )}
 
       {/* Barra de Acciones Clave: WhatsApp + Abonar + Saldar + Eliminar */}
-      <div className="pt-2.5 border-t border-gray-100 flex items-center justify-between gap-1.5 flex-wrap">
+      <div className="pt-2.5 border-t border-gray-100 flex items-center justify-between gap-1.5">
         
-        <div className="flex items-center gap-1.5 flex-1 min-w-0">
+        <div className="flex items-center gap-1.5 flex-wrap min-w-0">
           {/* Botón WhatsApp */}
           <button
             type="button"
@@ -164,9 +164,9 @@ export function DebtCard({
               }
             }}
             title={debt.phone ? `Enviar plantilla de WhatsApp a ${debt.personName}` : 'Enviar mensaje por WhatsApp'}
-            className="px-3 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-black flex items-center gap-1.5 cursor-pointer transition-colors shadow-2xs border border-emerald-200/70 shrink-0"
+            className="px-2.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-[11px] font-black flex items-center gap-1 cursor-pointer transition-colors shadow-2xs border border-emerald-200/70 shrink-0"
           >
-            <MessageCircle size={14} className="text-emerald-600 fill-emerald-100" />
+            <MessageCircle size={13} className="text-emerald-600 fill-emerald-100" />
             <span>WhatsApp</span>
           </button>
 
@@ -176,9 +176,9 @@ export function DebtCard({
               type="button"
               onClick={() => { sounds.playPop(); onOpenPayment(debt); }}
               title="Registrar un abono o pago parcial"
-              className="px-3.5 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-black flex items-center gap-1.5 cursor-pointer transition-all shadow-2xs border border-blue-200/90 shrink-0 active:scale-95"
+              className="px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 text-[11px] font-black flex items-center gap-1 cursor-pointer transition-all shadow-2xs border border-blue-200/90 shrink-0 active:scale-95"
             >
-              <DollarSign size={14} className="text-blue-600 stroke-[3]" />
+              <DollarSign size={13} className="text-blue-600 stroke-[3]" />
               <span>Abonar</span>
             </button>
           )}
@@ -193,18 +193,18 @@ export function DebtCard({
                 onMarkPaid(debt.id);
               }
             }}
-            className={`px-3 py-2 rounded-xl text-xs font-black flex items-center gap-1.5 cursor-pointer transition-colors shrink-0 ${
+            className={`px-3 py-1.5 rounded-xl text-[11px] font-black flex items-center gap-1 cursor-pointer transition-colors shrink-0 ${
               debt.isPaid
                 ? 'bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200'
                 : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs'
             }`}
           >
-            <Check size={13} className="stroke-[3]" />
+            <Check size={12} className="stroke-[3]" />
             <span>{debt.isPaid ? 'Reabrir' : 'Saldado'}</span>
           </button>
         </div>
 
-        {/* Botón Eliminar */}
+        {/* Botón Eliminar (Separado y protegido a la derecha) */}
         <button
           type="button"
           onClick={() => {
@@ -214,9 +214,9 @@ export function DebtCard({
             }
           }}
           title="Eliminar registro"
-          className="w-8 h-8 rounded-xl bg-gray-50 hover:bg-rose-50 hover:text-rose-600 flex items-center justify-center text-gray-400 cursor-pointer transition-colors shrink-0"
+          className="w-8 h-8 rounded-xl bg-gray-50 hover:bg-rose-50 hover:text-rose-600 flex items-center justify-center text-gray-400 cursor-pointer transition-colors shrink-0 border border-gray-200/60 ml-1"
         >
-          <Trash2 size={14} />
+          <Trash2 size={13} />
         </button>
 
       </div>
