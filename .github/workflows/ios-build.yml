@@ -105,6 +105,7 @@ jobs:
               -configuration Release \
               -archivePath "$ARCHIVE_PATH" \
               DEVELOPMENT_TEAM=H79W4YK96D \
+              CURRENT_PROJECT_VERSION="${{ github.run_number }}" \
               2>&1 | tee xcodebuild.log || (echo "::error::Xcode build failed. Checking errors:" && grep -i "error:" xcodebuild.log -A 2 -B 1 | head -n 30 && tail -n 50 xcodebuild.log && exit 65)
           else
             echo "Building unsigned/ad-hoc for iOS package..."
