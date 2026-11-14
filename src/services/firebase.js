@@ -72,15 +72,16 @@ export async function loginWithApple(rememberMe = true) {
         }
       });
 
-      const idToken = loginRes?.result?.idToken;
-      const rawNonce = loginRes?.result?.nonce;
+      const resData = loginRes?.result || loginRes;
+      const idToken = resData?.idToken || resData?.identityToken;
+      const rawNonce = resData?.nonce;
       if (!idToken) {
         return { user: null, error: 'No se recibió la confirmación de Apple.' };
       }
 
       const credential = appleProvider.credential({
         idToken: idToken,
-        rawNonce: rawNonce
+        ...(rawNonce ? { rawNonce } : {})
       });
       const userCredential = await signInWithCredential(auth, credential);
       return { user: userCredential.user, error: null };
