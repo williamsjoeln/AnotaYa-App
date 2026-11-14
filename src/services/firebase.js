@@ -3,6 +3,8 @@ import { Capacitor } from '@capacitor/core';
 import { SocialLogin } from '@capgo/capacitor-social-login';
 import { 
   getAuth, 
+  initializeAuth,
+  indexedDBLocalPersistence,
   GoogleAuthProvider, 
   OAuthProvider,
   signInWithPopup, 
@@ -38,7 +40,11 @@ const firebaseConfig = {
 };
 
 export const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
+export const auth = typeof window !== 'undefined'
+  ? initializeAuth(app, {
+      persistence: [indexedDBLocalPersistence, browserLocalPersistence, browserSessionPersistence]
+    })
+  : getAuth(app);
 export const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({ prompt: 'select_account' });
@@ -50,7 +56,11 @@ appleProvider.addScope('name');
 // Apple Sign In (Social Login Oficial para iOS, Web y Android)
 export async function loginWithApple(rememberMe = true) {
   try {
-    await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
+    try {
+      await setPersistence(auth, rememberMe ? (indexedDBLocalPersistence || browserLocalPersistence) : browserSessionPersistence);
+    } catch (persistErr) {
+      console.warn('Persistence setup warning:', persistErr);
+    }
 
     const isIOS = typeof navigator !== 'undefined' && /iPhone|iPad|iPod/i.test(navigator.userAgent);
 
@@ -106,7 +116,11 @@ async function ensureSocialLogin() {
 // Google Sign In (Selector nativo en Android/iOS o Popup en Web)
 export async function loginWithGoogle(rememberMe = true) {
   try {
-    await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
+    try {
+      await setPersistence(auth, rememberMe ? (indexedDBLocalPersistence || browserLocalPersistence) : browserSessionPersistence);
+    } catch (persistErr) {
+      console.warn('Persistence setup warning:', persistErr);
+    }
 
     // En Android / iOS nativo con Capacitor, usamos el selector oficial de Google (sin abrir navegador)
     if (Capacitor.isNativePlatform()) {
@@ -183,7 +197,11 @@ export async function checkRedirectResult() {
 // Email & Password Register with Official Verification Email
 export async function registerWithEmail(email, password, displayName, rememberMe = true) {
   try {
-    await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
+    try {
+      await setPersistence(auth, rememberMe ? (indexedDBLocalPersistence || browserLocalPersistence) : browserSessionPersistence);
+    } catch (persistErr) {
+      console.warn('Persistence setup warning:', persistErr);
+    }
     const result = await createUserWithEmailAndPassword(auth, email, password);
     
     // Enviar correo de confirmación oficial a su bandeja de entrada
@@ -209,7 +227,11 @@ export async function registerWithEmail(email, password, displayName, rememberMe
 // Email & Password Login
 export async function loginWithEmail(email, password, rememberMe = true) {
   try {
-    await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
+    try {
+      await setPersistence(auth, rememberMe ? (indexedDBLocalPersistence || browserLocalPersistence) : browserSessionPersistence);
+    } catch (persistErr) {
+      console.warn('Persistence setup warning:', persistErr);
+    }
     const result = await signInWithEmailAndPassword(auth, email, password);
     return { user: result.user, error: null };
   } catch (error) {

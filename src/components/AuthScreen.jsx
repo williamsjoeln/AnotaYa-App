@@ -175,7 +175,6 @@ export function AuthScreen({ onLoginSuccess }) {
         try {
           confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
         } catch {}
-        alert(`🎉 ¡Cuenta creada con éxito!\n\nHemos enviado un correo oficial de confirmación a: ${user.email}\nPor favor revisa tu bandeja de entrada (o carpeta de spam) para confirmar tu cuenta.`);
         onLoginSuccess({
           uid: user.uid,
           name: name.trim(),
