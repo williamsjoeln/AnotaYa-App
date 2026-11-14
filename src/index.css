@@ -6,7 +6,7 @@
 
 html, body {
   font-family: -apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
-  background-color: #F2F4F7;
+  background-color: #F8FAFC;
   color: #111827;
   margin: 0;
   padding: 0;
@@ -15,10 +15,12 @@ html, body {
   position: relative;
   width: 100%;
   max-width: 100%;
+  min-height: 100%;
   overflow-x: hidden !important;
   overscroll-behavior-x: none !important;
+  overscroll-behavior-y: auto !important;
   touch-action: pan-y !important;
-  -webkit-overflow-scrolling: touch;
+  -webkit-overflow-scrolling: touch !important;
 }
 
 #root {
