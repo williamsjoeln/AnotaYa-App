@@ -164,11 +164,26 @@ export default function App() {
             (cloudData) => {
               if (!isMounted) return;
               if (cloudData && Array.isArray(cloudData.debts)) {
-                setDebts(cloudData.debts);
-                try {
-                  localStorage.setItem('anotaya_debts', JSON.stringify(cloudData.debts));
-                  localStorage.setItem('bolsillo_debts', JSON.stringify(cloudData.debts));
-                } catch {}
+                // Combinar inteligentemente los pagos locales con la nube para nunca perder abonos
+                setDebts(prevDebts => {
+                  const merged = cloudData.debts.map(cloudDebt => {
+                    const localDebt = prevDebts.find(ld => ld.id === cloudDebt.id);
+                    if (localDebt) {
+                      const cloudPayments = cloudDebt.payments || [];
+                      const localPayments = localDebt.payments || [];
+                      // Si local tiene mas abonos que la nube, preservar los abonos locales y respaldar a Firestore
+                      if (localPayments.length > cloudPayments.length) {
+                        return { ...cloudDebt, payments: localPayments, isPaid: localDebt.isPaid };
+                      }
+                    }
+                    return cloudDebt;
+                  });
+                  try {
+                    localStorage.setItem('anotaya_debts', JSON.stringify(merged));
+                    localStorage.setItem('bolsillo_debts', JSON.stringify(merged));
+                  } catch {}
+                  return merged;
+                });
               } else if (cloudData === null) {
                 // Si la nube aún no tiene documento creado, pero el usuario tiene deudas creadas localmente, respaldar a la nube
                 try {
