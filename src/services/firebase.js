@@ -18,14 +18,16 @@ import {
   setPersistence,
   browserLocalPersistence,
   browserSessionPersistence,
-  signOut, 
+  signOut,
+  deleteUser,
   onAuthStateChanged 
 } from 'firebase/auth';
 import { 
   getFirestore, 
   doc, 
   setDoc, 
-  getDoc, 
+  getDoc,
+  deleteDoc,
   onSnapshot 
 } from 'firebase/firestore';
 
@@ -310,6 +312,31 @@ export async function resetPassword(email) {
 // Logout
 export async function logoutUser() {
   await signOut(auth);
+}
+
+// Eliminar cuenta y datos del usuario (Requisito App Store Guideline 5.1.1(v))
+export async function deleteUserAccount() {
+  const user = auth.currentUser;
+  if (!user) return { success: false, error: 'No hay sesión activa.' };
+  try {
+    const uid = user.uid;
+    try {
+      await deleteDoc(doc(db, 'user_finances', uid));
+    } catch (e) {
+      console.warn('Error eliminando datos de firestore:', e);
+    }
+    await deleteUser(user);
+    return { success: true, error: null };
+  } catch (error) {
+    console.error('Error eliminando cuenta:', error);
+    if (error.code === 'auth/requires-recent-login') {
+      return { 
+        success: false, 
+        error: 'Por seguridad, vuelve a iniciar sesión e intenta eliminar la cuenta de nuevo.' 
+      };
+    }
+    return { success: false, error: error.message };
+  }
 }
 
 // Guardar Deudas en Firestore de forma directa y segura (AnotaYa)

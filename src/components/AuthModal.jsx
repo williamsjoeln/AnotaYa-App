@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { X, Lock, Mail, User, ShieldCheck, LogOut, Check, ArrowRight, RotateCcw, Crown, Bell } from 'lucide-react';
-import { loginWithGoogle, loginWithApple, loginWithEmail, registerWithEmail, logoutUser } from '../services/firebase';
+import { X, Lock, Mail, User, ShieldCheck, LogOut, Check, ArrowRight, RotateCcw, Crown, Bell, Trash2 } from 'lucide-react';
+import { loginWithGoogle, loginWithApple, loginWithEmail, registerWithEmail, logoutUser, deleteUserAccount } from '../services/firebase';
 import { sounds } from '../utils/audio';
 
 export function AuthModal({ 
@@ -134,6 +134,28 @@ export function AuthModal({
     onClose();
   };
 
+  const handleDeleteAccount = async () => {
+    const confirmed = window.confirm(
+      '¿Estás seguro de que deseas eliminar tu cuenta permanentemente?\n\nEsta acción borrará todas tus deudas y datos respaldados en la nube. No se puede deshacer.'
+    );
+    if (!confirmed) return;
+
+    setLoading(true);
+    setError('');
+    const { success, error: delError } = await deleteUserAccount();
+    setLoading(false);
+
+    if (delError) {
+      setError(delError);
+      sounds.playDelete();
+    } else if (success) {
+      sounds.playDelete();
+      onUserChange(null);
+      if (onResetAllData) onResetAllData();
+      onClose();
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in overflow-hidden w-full max-w-full touch-pan-y overscroll-none">
       <div className="modal-sheet-container w-full max-w-sm bg-white rounded-[34px] p-6 shadow-2xl border border-gray-100 text-left space-y-4 box-border">
@@ -243,6 +265,15 @@ export function AuthModal({
               >
                 <LogOut size={14} />
                 <span>Cerrar Sesión</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleDeleteAccount}
+                className="w-full py-2 rounded-2xl bg-gray-50 hover:bg-red-50 text-gray-400 hover:text-red-600 font-bold text-[11px] flex items-center justify-center gap-1.5 cursor-pointer transition-colors"
+              >
+                <Trash2 size={12} />
+                <span>Eliminar mi Cuenta y Datos</span>
               </button>
             </div>
           </div>
