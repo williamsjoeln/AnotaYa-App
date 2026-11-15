@@ -81,11 +81,13 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>com.anotaya.app</string>
-				<string>com.googleusercontent.apps.797797104296-tlt21sh24beptk6f5vkh0232hscf26rm</string>
+				<string>com.googleusercontent.apps.797797104296-voqmurt6go9gr7gtd7pqcu2kc8qiuui6</string>
 			</array>
 		</dict>
 	</array>
 	<key>GIDClientID</key>
+	<string>797797104296-voqmurt6go9gr7gtd7pqcu2kc8qiuui6.apps.googleusercontent.com</string>
+	<key>GIDServerClientID</key>
 	<string>797797104296-tlt21sh24beptk6f5vkh0232hscf26rm.apps.googleusercontent.com</string>
 </dict>
 </plist>

@@ -115,6 +115,15 @@ export async function loginWithApple(rememberMe = true) {
     const result = await Promise.race([popupPromise, timeoutPromise]);
     return { user: result.user, error: null };
   } catch (error) {
+    if (
+      error?.code === 'USER_CANCELLED' || 
+      error?.message?.includes('1001') || 
+      error?.message?.includes('cancel') || 
+      error?.message?.includes('Cancel') ||
+      error?.code === 'auth/popup-closed-by-user'
+    ) {
+      return { user: null, error: null };
+    }
     if (error.message === 'timeout' || error.code === 'auth/popup-blocked') {
       try {
         await signInWithRedirect(auth, appleProvider);
@@ -140,6 +149,8 @@ async function ensureSocialLogin() {
     await SocialLogin.initialize({
       google: {
         webClientId: '797797104296-tlt21sh24beptk6f5vkh0232hscf26rm.apps.googleusercontent.com',
+        iOSClientId: '797797104296-voqmurt6go9gr7gtd7pqcu2kc8qiuui6.apps.googleusercontent.com',
+        iOSServerClientId: '797797104296-tlt21sh24beptk6f5vkh0232hscf26rm.apps.googleusercontent.com',
         mode: 'online'
       },
       apple: {}
@@ -164,15 +175,19 @@ export async function loginWithGoogle(rememberMe = true) {
       await ensureSocialLogin();
       const loginRes = await SocialLogin.login({
         provider: 'google',
-        options: {}
+        options: {
+          scopes: ['email', 'profile']
+        }
       });
 
-      const idToken = loginRes?.result?.idToken;
-      if (!idToken) {
+      const resData = loginRes?.result || loginRes;
+      const idToken = resData?.idToken;
+      const accessToken = resData?.accessToken?.token || resData?.accessToken;
+      if (!idToken && !accessToken) {
         return { user: null, error: 'No se recibió la confirmación de Google.' };
       }
 
-      const credential = GoogleAuthProvider.credential(idToken);
+      const credential = GoogleAuthProvider.credential(idToken, accessToken);
       const userCredential = await signInWithCredential(auth, credential);
       return { user: userCredential.user, error: null };
     }
@@ -199,8 +214,14 @@ export async function loginWithGoogle(rememberMe = true) {
     const result = await Promise.race([popupPromise, timeoutPromise]);
     return { user: result.user, error: null };
   } catch (error) {
-    if (error.code === 'auth/popup-closed-by-user' || error.message?.includes('canceled') || error.message?.includes('cancelled')) {
-      return { user: null, error: 'Ventana cerrada. Toca de nuevo o ingresa con tu correo abajo.' };
+    if (
+      error?.code === 'USER_CANCELLED' || 
+      error?.message?.includes('canceled') || 
+      error?.message?.includes('cancelled') || 
+      error?.message?.includes('1001') ||
+      error?.code === 'auth/popup-closed-by-user'
+    ) {
+      return { user: null, error: null };
     }
     if (error.message === 'timeout' || error.code === 'auth/popup-blocked') {
       try {
