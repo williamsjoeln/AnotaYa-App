@@ -88,9 +88,10 @@ export async function loginWithApple(rememberMe = true) {
         return { user: userCredential.user, error: null };
       } catch (authErr) {
         console.error('Firebase Apple auth error:', authErr);
+        const msg = authErr.code ? '[' + authErr.code + '] ' + authErr.message : (authErr.message || String(authErr));
         return { 
           user: null, 
-          error: authErr.code ? []  : (authErr.message || String(authErr))
+          error: msg
         };
       }
     }
