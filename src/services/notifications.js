@@ -125,6 +125,26 @@ export async function sendTestNotification(sampleDebtName = 'Ricardo', sampleAmo
   return { success: false, reason: 'unknown' };
 }
 
+// Limpiar de forma definitiva todas las notificaciones programadas en el dispositivo
+export async function clearAllScheduledReminders() {
+  if (Capacitor.isNativePlatform()) {
+    try {
+      const pending = await LocalNotifications.getPending();
+      if (pending?.notifications?.length > 0) {
+        await LocalNotifications.cancel({ notifications: pending.notifications });
+      }
+      // Cancelación forzada de IDs conocidos para garantizar que iOS no mantenga nada en caché
+      const knownIds = [{ id: 101 }, { id: 102 }, { id: 103 }, { id: 9999 }];
+      for (let i = 0; i < 50; i++) {
+        knownIds.push({ id: 1000 + i });
+      }
+      await LocalNotifications.cancel({ notifications: knownIds }).catch(() => {});
+    } catch (e) {
+      console.warn('Error clearing pending notifications:', e);
+    }
+  }
+}
+
 // Programar recordatorios automáticos basados en las deudas activas
 export async function scheduleSmartReminders(debts = [], settings = {}) {
   const {
@@ -133,20 +153,27 @@ export async function scheduleSmartReminders(debts = [], settings = {}) {
     customHourInterval = 4
   } = settings;
 
+  // 1. SIEMPRE limpiar antes todas las notificaciones previas en iOS / Android
+  await clearAllScheduledReminders();
+
+  // 2. Si las notificaciones están desactivadas en los ajustes, salir (ya quedó limpio)
   if (!enabled) {
-    if (Capacitor.isNativePlatform()) {
-      try {
-        const pending = await LocalNotifications.getPending();
-        if (pending.notifications.length > 0) {
-          await LocalNotifications.cancel({ notifications: pending.notifications });
-        }
-      } catch {}
-    }
     return;
   }
 
-  const activeDebts = debts.filter(d => !d.isPaid);
-  if (activeDebts.length === 0) return;
+  // 3. Filtrar deudas activas (SOLO aquellas que NO están saldadas: !d.isPaid y con saldo restante > 0)
+  const activeDebts = debts.filter(d => {
+    if (d.isPaid) return false;
+    const paid = (d.payments || []).reduce((s, p) => s + (p.amount || 0), 0);
+    const remaining = Math.max(0, (d.amount || 0) - paid);
+    return remaining > 0;
+  });
+
+  // Si todas las deudas están saldadas o no hay saldo pendiente, NO programar nada.
+  // Como ya limpiamos todo con clearAllScheduledReminders(), el teléfono quedará en silencio total sin alertas fantasma.
+  if (activeDebts.length === 0) {
+    return;
+  }
 
   const theyOweMe = activeDebts.filter(d => d.type === 'they_owe_me');
   const iOwe = activeDebts.filter(d => d.type === 'i_owe');
@@ -163,12 +190,6 @@ export async function scheduleSmartReminders(debts = [], settings = {}) {
 
   if (Capacitor.isNativePlatform()) {
     try {
-      // Limpiar anteriores
-      const pending = await LocalNotifications.getPending();
-      if (pending.notifications.length > 0) {
-        await LocalNotifications.cancel({ notifications: pending.notifications });
-      }
-
       const notificationsToSchedule = [];
       const now = new Date();
 

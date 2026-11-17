@@ -20,7 +20,7 @@ import { sounds } from './utils/audio';
 import { auth, db, syncDebtsToFirestore, syncUserDataToFirestore, subscribeToUserData, checkRedirectResult, getUserDataOnce } from './services/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
-import { setupNotificationChannels, scheduleSmartReminders } from './services/notifications';
+import { setupNotificationChannels, scheduleSmartReminders, clearAllScheduledReminders } from './services/notifications';
 import confetti from 'canvas-confetti';
 
 export default function App() {
@@ -105,6 +105,8 @@ export default function App() {
   useEffect(() => {
     if (isPro && notificationSettings.enabled) {
       scheduleSmartReminders(debts, notificationSettings);
+    } else {
+      clearAllScheduledReminders();
     }
   }, [debts, isPro, notificationSettings]);
 
@@ -214,6 +216,7 @@ export default function App() {
         } else {
           setUser(null);
           setDebts([]);
+          clearAllScheduledReminders();
           try {
             localStorage.removeItem('anotaya_user');
             localStorage.removeItem('anotaya_debts');
@@ -377,6 +380,7 @@ export default function App() {
 
   const handleResetAllData = () => {
     sounds.playCash();
+    clearAllScheduledReminders();
     saveDebts([]);
     alert('✅ Tu cuenta de AnotaYa ha sido reiniciada a cero con éxito.');
   };
